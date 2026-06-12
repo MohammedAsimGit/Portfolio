@@ -30,7 +30,17 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "New password must be at least 6 characters" }, { status: 400 });
     }
 
-    await dbConnect();
+    let dbConnected = false;
+    try {
+      await dbConnect();
+      dbConnected = true;
+    } catch {
+      return NextResponse.json({ error: "Database is not available. Password cannot be changed in fallback mode." }, { status: 503 });
+    }
+
+    if (!dbConnected) {
+      return NextResponse.json({ error: "Database connection failed" }, { status: 503 });
+    }
 
     const adminDoc = await Admin.findById(admin.id);
     if (!adminDoc) {
