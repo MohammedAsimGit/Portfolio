@@ -1,8 +1,11 @@
 import { NextResponse } from "next/server";
-import dbConnect from "@/lib/dbConnect";
-import Admin from "@/models/Admin";
-import bcrypt from "bcryptjs";
 import { isRequestAuthorized, getTokenFromRequest, getAdminFromToken } from "@/lib/auth";
+
+const MONGODB_URI = process.env.MONGODB_URI || "";
+
+function isRealMongoURI(uri: string): boolean {
+  return uri.length > 0 && !uri.includes("localhost") && !uri.includes("127.0.0.1");
+}
 
 export async function POST(request: Request) {
   try {
@@ -30,17 +33,15 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "New password must be at least 6 characters" }, { status: 400 });
     }
 
-    let dbConnected = false;
-    try {
-      await dbConnect();
-      dbConnected = true;
-    } catch {
-      return NextResponse.json({ error: "Database is not available. Password cannot be changed in fallback mode." }, { status: 503 });
+    if (!isRealMongoURI(MONGODB_URI)) {
+      return NextResponse.json({ error: "Database is not configured. Set MONGODB_URI in Vercel environment variables to enable password changes." }, { status: 503 });
     }
 
-    if (!dbConnected) {
-      return NextResponse.json({ error: "Database connection failed" }, { status: 503 });
-    }
+    const dbConnect = (await import("@/lib/dbConnect")).default;
+    const Admin = (await import("@/models/Admin")).default;
+    const bcrypt = (await import("bcryptjs")).default;
+
+    await dbConnect();
 
     const adminDoc = await Admin.findById(admin.id);
     if (!adminDoc) {
