@@ -2,6 +2,7 @@
 
 import { useState, FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { motion } from 'framer-motion';
 
 export default function AdminLoginPage() {
@@ -169,9 +170,18 @@ export default function AdminLoginPage() {
           </form>
 
           {/* Footer */}
-          <p className="mt-8 text-center font-body text-xs text-text-muted">
-            Portfolio CMS &middot; Admin Panel
-          </p>
+          <div className="mt-8 space-y-3 text-center">
+            <Link
+              href="/"
+              className="inline-flex items-center gap-1.5 font-body text-xs text-text-muted hover:text-primary transition-colors"
+            >
+              <span className="material-symbols-outlined text-sm">arrow_back</span>
+              Back to Home
+            </Link>
+            <p className="font-body text-xs text-text-muted">
+              Portfolio CMS &middot; Admin Panel
+            </p>
+          </div>
         </div>
       </motion.div>
     </div>

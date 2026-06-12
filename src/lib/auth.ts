@@ -12,22 +12,29 @@ export function verifyAdminToken(token: string): boolean {
   }
 }
 
-export function isRequestAuthorized(request: Request | NextRequest): boolean {
-  let token: string | undefined;
-
-  // Try to read cookie
+export function getTokenFromRequest(request: Request | NextRequest): string | undefined {
   if (request instanceof NextRequest) {
-    token = request.cookies.get("admin_token")?.value;
-  } else {
-    // Normal request
-    const cookieHeader = request.headers.get("cookie") || "";
-    const cookies = Object.fromEntries(
-      cookieHeader.split(";").map((c) => c.trim().split("="))
-    );
-    token = cookies["admin_token"];
+    return request.cookies.get("admin_token")?.value;
   }
+  const cookieHeader = request.headers.get("cookie") || "";
+  const cookies = Object.fromEntries(
+    cookieHeader.split(";").map((c) => c.trim().split("="))
+  );
+  return cookies["admin_token"];
+}
 
-  // Fallback to Authorization Header
+export function getAdminFromToken(token: string): { id: string; username: string } | null {
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET) as { id: string; username: string };
+    return decoded;
+  } catch {
+    return null;
+  }
+}
+
+export function isRequestAuthorized(request: Request | NextRequest): boolean {
+  let token = getTokenFromRequest(request);
+
   if (!token) {
     const authHeader = request.headers.get("authorization") || "";
     if (authHeader.startsWith("Bearer ")) {

@@ -81,9 +81,16 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       
       {/* Desktop Sidebar */}
       <aside className="hidden md:flex fixed left-0 top-0 h-full w-64 bg-card border-r border-border flex-col py-8 px-4 z-40">
-        <div className="mb-8 px-4">
+        <div className="mb-4 px-4">
           <h1 className="font-display font-extrabold text-xl text-primary tracking-tight">Admin Console</h1>
           <p className="font-mono text-[10px] text-text-muted mt-1 uppercase tracking-widest">Mohammed Asim</p>
+          <Link
+            href="/"
+            className="inline-flex items-center gap-1.5 mt-3 font-body text-xs text-text-muted hover:text-primary transition-colors"
+          >
+            <span className="material-symbols-outlined text-sm">arrow_back</span>
+            Back to Home
+          </Link>
         </div>
         
         <nav className="flex-1 space-y-1 overflow-y-auto">

@@ -68,6 +68,11 @@ export default function AdminSettingsPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [changingPassword, setChangingPassword] = useState(false);
+
   useEffect(() => {
     async function fetchSettings() {
       try {
@@ -107,6 +112,43 @@ export default function AdminSettingsPage() {
       showToast("Something went wrong", "error");
     } finally {
       setSaving(false);
+    }
+  }
+
+  async function handleChangePassword() {
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      showToast("All password fields are required", "error");
+      return;
+    }
+    if (newPassword.length < 6) {
+      showToast("New password must be at least 6 characters", "error");
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      showToast("New passwords do not match", "error");
+      return;
+    }
+
+    setChangingPassword(true);
+    try {
+      const res = await fetch("/api/auth/change-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ currentPassword, newPassword }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        showToast("Password changed successfully", "success");
+        setCurrentPassword("");
+        setNewPassword("");
+        setConfirmPassword("");
+      } else {
+        showToast(data.error || "Failed to change password", "error");
+      }
+    } catch {
+      showToast("Something went wrong", "error");
+    } finally {
+      setChangingPassword(false);
     }
   }
 
@@ -298,6 +340,124 @@ export default function AdminSettingsPage() {
                       className="w-full rounded-lg border border-border bg-background pl-10 pr-4 py-2.5 font-mono text-sm text-foreground placeholder:text-text-muted/50 outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/25"
                     />
                   </div>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Password Section */}
+            <motion.div
+              variants={cardVariants}
+              className="bg-card border border-border rounded-2xl p-6 sm:p-8"
+            >
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center shrink-0">
+                  <span className="material-symbols-outlined text-amber-500 text-[20px]">
+                    lock
+                  </span>
+                </div>
+                <div>
+                  <h2 className="font-display text-lg font-semibold text-foreground">
+                    Change Password
+                  </h2>
+                  <p className="font-body text-xs text-text-muted mt-0.5">
+                    Update your admin account password
+                  </p>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <label
+                    htmlFor="currentPassword"
+                    className="block font-body text-sm font-medium text-foreground mb-1.5"
+                  >
+                    Current Password
+                  </label>
+                  <input
+                    id="currentPassword"
+                    type="password"
+                    autoComplete="current-password"
+                    value={currentPassword}
+                    onChange={(e) => setCurrentPassword(e.target.value)}
+                    placeholder="Enter current password"
+                    className="w-full rounded-lg border border-border bg-background px-4 py-2.5 font-mono text-sm text-foreground placeholder:text-text-muted/50 outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/25"
+                  />
+                </div>
+
+                <div>
+                  <label
+                    htmlFor="newPassword"
+                    className="block font-body text-sm font-medium text-foreground mb-1.5"
+                  >
+                    New Password
+                  </label>
+                  <input
+                    id="newPassword"
+                    type="password"
+                    autoComplete="new-password"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    placeholder="Enter new password (min 6 characters)"
+                    className="w-full rounded-lg border border-border bg-background px-4 py-2.5 font-mono text-sm text-foreground placeholder:text-text-muted/50 outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/25"
+                  />
+                </div>
+
+                <div>
+                  <label
+                    htmlFor="confirmPassword"
+                    className="block font-body text-sm font-medium text-foreground mb-1.5"
+                  >
+                    Confirm New Password
+                  </label>
+                  <input
+                    id="confirmPassword"
+                    type="password"
+                    autoComplete="new-password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    placeholder="Confirm new password"
+                    className="w-full rounded-lg border border-border bg-background px-4 py-2.5 font-mono text-sm text-foreground placeholder:text-text-muted/50 outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/25"
+                  />
+                </div>
+
+                <div className="pt-2">
+                  <motion.button
+                    onClick={handleChangePassword}
+                    disabled={changingPassword}
+                    whileHover={{ scale: changingPassword ? 1 : 1.02 }}
+                    whileTap={{ scale: changingPassword ? 1 : 0.98 }}
+                    className="rounded-lg bg-amber-500 px-5 py-2.5 font-display text-sm font-semibold text-white hover:bg-amber-600 transition-colors disabled:opacity-60 disabled:cursor-not-allowed flex items-center gap-2"
+                  >
+                    {changingPassword ? (
+                      <>
+                        <svg
+                          className="animate-spin h-4 w-4"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                        >
+                          <circle
+                            className="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            strokeWidth="3"
+                          />
+                          <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                          />
+                        </svg>
+                        Updating…
+                      </>
+                    ) : (
+                      <>
+                        <span className="material-symbols-outlined text-lg">lock_reset</span>
+                        Change Password
+                      </>
+                    )}
+                  </motion.button>
                 </div>
               </div>
             </motion.div>
