@@ -204,12 +204,6 @@ export default function PortfolioHome() {
             </button>
 
             <a 
-              href="/admin/dashboard" 
-              className="px-5 py-2 rounded-full border border-border text-sm font-semibold hover:bg-card transition-all active:scale-95"
-            >
-              Admin
-            </a>
-            <a 
               href="#contact" 
               className="px-5 py-2 rounded-full bg-primary text-white text-sm font-semibold ink-shadow-sm hover:brightness-110 transition-all active:scale-95"
             >
@@ -880,7 +874,6 @@ export default function PortfolioHome() {
             <div className="flex flex-wrap justify-center gap-8">
               <a href="https://github.com/mohammedasim" target="_blank" rel="noreferrer" className="text-sm font-body text-text-muted hover:text-primary transition-colors">GitHub</a>
               <a href="https://linkedin.com/in/mohammedasim" target="_blank" rel="noreferrer" className="text-sm font-body text-text-muted hover:text-primary transition-colors">LinkedIn</a>
-              <a href="/admin/login" className="text-sm font-body text-text-muted hover:text-primary transition-colors">Admin Area</a>
             </div>
           </div>
         </footer>
