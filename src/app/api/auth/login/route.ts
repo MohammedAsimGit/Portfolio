@@ -5,7 +5,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
 const JWT_SECRET = process.env.JWT_SECRET || "portfolio-cms-secret-key-change-in-production-2026";
-const FALLBACK_ADMIN = { id: "fallback-admin-id", username: "admin", password: "admin123" };
+const FALLBACK_ADMIN = { id: "fallback-admin-id", username: "admin", password: "Asim@2026Portfolio" };
 
 export async function POST(request: Request) {
   try {
@@ -36,7 +36,7 @@ export async function POST(request: Request) {
           password: hashedPassword,
           role: "admin",
         });
-        console.log("Seeded default admin user. Username: admin, Password: admin123");
+        console.log("Seeded default admin user. Username: admin, Password: Asim@2026Portfolio");
       }
 
       const admin = await Admin.findOne({ username });
