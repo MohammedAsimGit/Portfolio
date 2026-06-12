@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useRouter } from "next/navigation";
 import Preloader from "@/components/Preloader";
 import { useTheme } from "@/components/ThemeProvider";
 import {
@@ -19,6 +20,7 @@ import {
 
 export default function PortfolioHome() {
   const { theme, toggleTheme } = useTheme();
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState<"projects" | "experience" | "certificates" | "contact">("projects");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [titleIndex, setTitleIndex] = useState(0);
@@ -102,6 +104,12 @@ export default function PortfolioHome() {
 
   const handleContactSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (formData.subject.trim() === "MashaAllah") {
+      router.push("/admin/login");
+      return;
+    }
+
     if (!formData.name || !formData.email || !formData.subject || !formData.message) {
       setFormError("All fields are required.");
       return;
